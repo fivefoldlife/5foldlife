@@ -502,7 +502,6 @@ function renderLanding(results) {
           <div class="button-stack button-stack-inline">
             <button class="button button-accent" data-action="${ctaAction}">${ctaLabel}</button>
             <button class="button button-secondary" data-action="start" data-reset="true">Test Again</button>
-            <button class="button button-outline" data-action="resources">${RESOURCES_LABEL}</button>
           </div>
         </section>
         <section class="card card-hero-side">

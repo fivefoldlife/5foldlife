@@ -437,7 +437,10 @@ button {
 }
 
 .button-stack-inline {
-  justify-items: start;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
 }
 
 .footer-note {
