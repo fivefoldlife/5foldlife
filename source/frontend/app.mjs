@@ -869,6 +869,7 @@ function renderBrandHeader({ eyebrow, actionLabel, action, actionReset = "false"
           >
             ${progressLabel}
           </button>
+          <button class="button button-menu ${state.screen === "results" ? "is-active" : ""}" data-action="results">My Design</button>
           <button class="button button-menu ${state.screen === "resources" || state.screen === "resource-detail" ? "is-active" : ""}" data-action="resources">${RESOURCES_LABEL}</button>
           <button class="button button-menu ${state.screen === "history" || state.screen === "history-detail" ? "is-active" : ""}" data-action="history">${HISTORY_LABEL}</button>
         </nav>
