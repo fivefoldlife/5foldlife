@@ -501,12 +501,6 @@ function paint(markup) {
 function renderLanding(results) {
   const progress = answeredCount();
   const hasProgress = progress > 0 && !hasResults();
-  const ctaLabel = hasResults()
-    ? "See Your Results"
-    : hasProgress
-      ? "Continue Discovery"
-      : "Start Discovery";
-  const ctaAction = hasResults() ? "results" : hasProgress ? "resume" : "start";
 
   return `
     <section class="screen screen-landing">
@@ -519,15 +513,12 @@ function renderLanding(results) {
         <section class="card card-hero">
           <p class="eyebrow">Spirit-led discovery</p>
           <h1>Discover the five-fold design that shapes how you build, discern, invite, nurture, and equip.</h1>
+          <button class="button button-accent button-hero" data-action="start" data-reset="true">Start Discovery</button>
           <p class="hero-copy">Take a guided assessment, uncover your strongest expression, and explore a polished library of all 20 designs in one place.</p>
           <div class="hero-meta-row">
             <span>50 questions</span>
             <span>10-15 minutes</span>
             <span>20 full design references</span>
-          </div>
-          <div class="button-stack button-stack-inline">
-            <button class="button button-accent" data-action="${ctaAction}">${ctaLabel}</button>
-            <button class="button button-secondary" data-action="start" data-reset="true">Test Again</button>
           </div>
         </section>
         <section class="card card-hero-side">

@@ -220,6 +220,13 @@ button {
   font-size: 0.92rem;
 }
 
+.button-hero {
+  min-height: 72px;
+  padding: 0 34px;
+  font-size: 1.18rem;
+  box-shadow: 0 20px 36px rgba(204, 85, 0, 0.2);
+}
+
 .button-menu {
   min-height: 42px;
   padding: 0 16px;
