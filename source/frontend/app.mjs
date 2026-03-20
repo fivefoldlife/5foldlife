@@ -557,15 +557,6 @@ function renderLanding(results) {
           </div>
         </section>
       </section>
-      <section class="card card-traits">
-        <div class="section-head">
-          <h3>How the assessment reads your design</h3>
-          <p>Each score is normalized into a percentage and mapped to your primary and secondary expression.</p>
-        </div>
-        <div class="trait-grid">
-          ${GIFT_ORDER.map((gift) => renderTraitCard(gift)).join("")}
-        </div>
-      </section>
       ${
         results
           ? `
