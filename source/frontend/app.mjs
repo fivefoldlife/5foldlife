@@ -178,6 +178,29 @@ function showResults() {
   scrollToTop();
 }
 
+function showMyDesign() {
+  clearAdvanceTimer();
+
+  if (hasResults()) {
+    showResults();
+    return;
+  }
+
+  const latestEntry = getLatestHistoryEntry();
+
+  if (latestEntry) {
+    state.screen = "history-detail";
+    state.selectedProfile = null;
+    state.selectedHistoryId = latestEntry.id;
+    persistState();
+    render();
+    scrollToTop();
+    return;
+  }
+
+  showHistory();
+}
+
 function showLanding() {
   clearAdvanceTimer();
   state.screen = "landing";
@@ -316,6 +339,9 @@ function handleClick(event) {
       break;
     case "results":
       showResults();
+      break;
+    case "my-design":
+      showMyDesign();
       break;
     case "landing":
       showLanding();
@@ -869,7 +895,7 @@ function renderBrandHeader({ eyebrow, actionLabel, action, actionReset = "false"
           >
             ${progressLabel}
           </button>
-          <button class="button button-menu ${state.screen === "results" ? "is-active" : ""}" data-action="results">My Design</button>
+          <button class="button button-menu ${state.screen === "results" || state.screen === "history-detail" ? "is-active" : ""}" data-action="my-design">My Design</button>
           <button class="button button-menu ${state.screen === "resources" || state.screen === "resource-detail" ? "is-active" : ""}" data-action="resources">${RESOURCES_LABEL}</button>
           <button class="button button-menu ${state.screen === "history" || state.screen === "history-detail" ? "is-active" : ""}" data-action="history">${HISTORY_LABEL}</button>
         </nav>
@@ -1135,6 +1161,10 @@ function normalizeSelectedHistoryId(value, resultHistory) {
 
 function getHistoryEntryById(historyId) {
   return state.resultHistory.find((entry) => entry.id === historyId) || null;
+}
+
+function getLatestHistoryEntry() {
+  return state.resultHistory[0] || null;
 }
 
 function renderFiveC(results) {
