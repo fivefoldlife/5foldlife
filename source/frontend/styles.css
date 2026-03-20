@@ -610,37 +610,38 @@ button {
 
 .card-progress {
   display: grid;
-  gap: 12px;
+  gap: 8px;
+  padding: 16px 18px;
 }
 
 .progress-topline {
   display: flex;
   justify-content: space-between;
   gap: 12px;
-  font-size: 0.94rem;
+  font-size: 0.82rem;
   color: var(--grey-700);
 }
 
 .card-question {
   display: grid;
-  gap: 18px;
-  padding-block: 30px 24px;
+  gap: 12px;
+  padding-block: 18px 16px;
 }
 
 .card-question h1 {
   margin: 0;
   max-width: 19ch;
-  font-size: clamp(1.5rem, 5.2vw, 2.4rem);
-  line-height: 1.08;
+  font-size: clamp(1.2rem, 4.4vw, 1.9rem);
+  line-height: 1.14;
   letter-spacing: -0.04em;
 }
 
 .question-copy {
   margin: 0;
   max-width: 48ch;
-  font-size: 0.9rem;
+  font-size: 0.82rem;
   color: var(--grey-700);
-  line-height: 1.6;
+  line-height: 1.45;
 }
 
 .choice-scale {
@@ -648,28 +649,28 @@ button {
   align-items: center;
   justify-content: space-between;
   gap: 12px;
-  font-size: 0.78rem;
+  font-size: 0.72rem;
   font-weight: 700;
   color: var(--grey-700);
 }
 
 .choice-list {
   display: grid;
-  gap: 10px;
+  gap: 8px;
 }
 
 .choice-button {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 16px;
+  gap: 12px;
   width: 100%;
-  padding: 11px 14px;
-  border-radius: 16px;
+  padding: 9px 12px;
+  border-radius: 14px;
   border: 1px solid var(--grey-200);
   background: var(--white);
   color: var(--black);
-  font-size: 0.9rem;
+  font-size: 0.84rem;
   font-weight: 600;
   text-align: left;
   cursor: pointer;
@@ -703,14 +704,14 @@ button {
 }
 
 .choice-copy strong {
-  font-size: 0.92rem;
+  font-size: 0.84rem;
   line-height: 1;
 }
 
 .choice-copy span {
   color: var(--grey-700);
-  font-size: 0.8rem;
-  line-height: 1.4;
+  font-size: 0.74rem;
+  line-height: 1.3;
 }
 
 .choice-button.is-selected .choice-copy span {
@@ -720,11 +721,11 @@ button {
 .choice-value {
   display: inline-grid;
   place-items: center;
-  width: 28px;
-  height: 28px;
+  width: 24px;
+  height: 24px;
   border-radius: 999px;
   background: rgba(0, 0, 0, 0.05);
-  font-size: 0.72rem;
+  font-size: 0.64rem;
   font-weight: 800;
 }
 
@@ -741,8 +742,8 @@ button {
 }
 
 .helper-copy {
-  font-size: 0.86rem;
-  line-height: 1.5;
+  font-size: 0.76rem;
+  line-height: 1.4;
 }
 
 .card-spotlight {
