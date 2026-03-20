@@ -476,10 +476,10 @@ function render() {
       case "landing":
       default:
         return renderLanding(results);
-    }
+      }
   })();
 
-  paint(markup);
+  paint(`${markup}${renderSiteFooter()}`);
 }
 
 function paint(markup) {
@@ -496,6 +496,18 @@ function paint(markup) {
   }
 
   update();
+}
+
+function renderSiteFooter() {
+  return `
+    <footer class="site-footer">
+      <p class="footer-note">Copyright 2025 5Fold Life LLC</p>
+      <p class="footer-note">
+        For more information, head to
+        <a class="footer-link" href="https://www.fivefold.life" target="_blank" rel="noreferrer">www.fivefold.life</a>
+      </p>
+    </footer>
+  `;
 }
 
 function renderLanding(results) {

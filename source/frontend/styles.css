@@ -455,6 +455,25 @@ button {
   line-height: 1.6;
 }
 
+.site-footer {
+  display: grid;
+  gap: 4px;
+  justify-items: center;
+  margin-top: 16px;
+  padding: 8px 4px 0;
+  text-align: center;
+}
+
+.footer-link {
+  color: var(--black);
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.footer-link:hover {
+  text-decoration: underline;
+}
+
 .card-traits,
 .card-preview,
 .card-resource-nav {
