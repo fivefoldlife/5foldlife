@@ -628,6 +628,12 @@ button {
   padding-block: 18px 16px;
 }
 
+.card-question-progress {
+  display: grid;
+  gap: 8px;
+  margin-top: 2px;
+}
+
 .card-question h1 {
   margin: 0;
   max-width: 19ch;
@@ -656,16 +662,17 @@ button {
 
 .choice-list {
   display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
   gap: 8px;
 }
 
 .choice-button {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 12px;
+  justify-content: center;
   width: 100%;
-  padding: 9px 12px;
+  min-height: 52px;
+  padding: 8px 6px;
   border-radius: 14px;
   border: 1px solid var(--grey-200);
   background: var(--white);
@@ -697,40 +704,19 @@ button {
   box-shadow: 0 18px 34px rgba(204, 85, 0, 0.26);
 }
 
-.choice-copy {
-  display: grid;
-  gap: 2px;
-  text-align: left;
-}
-
-.choice-copy strong {
-  font-size: 0.84rem;
-  line-height: 1;
-}
-
-.choice-copy span {
-  color: var(--grey-700);
-  font-size: 0.74rem;
-  line-height: 1.3;
-}
-
-.choice-button.is-selected .choice-copy span {
-  color: rgba(255, 255, 255, 0.88);
-}
-
 .choice-value {
   display: inline-grid;
   place-items: center;
-  width: 24px;
-  height: 24px;
+  width: 100%;
+  height: auto;
   border-radius: 999px;
-  background: rgba(0, 0, 0, 0.05);
-  font-size: 0.64rem;
+  background: transparent;
+  font-size: 0.98rem;
   font-weight: 800;
 }
 
 .choice-button.is-selected .choice-value {
-  background: rgba(255, 255, 255, 0.18);
+  background: transparent;
 }
 
 .action-row {

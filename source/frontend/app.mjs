@@ -733,15 +733,6 @@ function renderAssessment() {
         actionLabel: "Save & Exit",
         action: "landing",
       })}
-      <section class="card card-progress">
-        <div class="progress-topline">
-          <span>Question ${question.id} of ${QUESTIONS.length}</span>
-          <span>${percent}%</span>
-        </div>
-        <div class="progress-track" aria-hidden="true">
-          <div class="progress-fill" style="width:${percent}%"></div>
-        </div>
-      </section>
       <section class="card card-question">
         <p class="question-index">Spirit-led assessment</p>
         <h1>${escapeHtml(question.text)}</h1>
@@ -758,16 +749,22 @@ function renderAssessment() {
                 class="choice-button ${active ? "is-selected" : ""}"
                 data-action="answer"
                 data-value="${option.value}"
+                aria-label="${escapeHtml(`${option.value} - ${option.label}`)}"
                 aria-pressed="${active ? "true" : "false"}"
               >
-                <span class="choice-copy">
-                  <strong>${option.value}</strong>
-                  <span>${option.label}</span>
-                </span>
                 <span class="choice-value">${option.shortLabel}</span>
               </button>
             `;
           }).join("")}
+        </div>
+        <div class="card-question-progress">
+          <div class="progress-topline">
+            <span>Question ${question.id} of ${QUESTIONS.length}</span>
+            <span>${percent}%</span>
+          </div>
+          <div class="progress-track" aria-hidden="true">
+            <div class="progress-fill" style="width:${percent}%"></div>
+          </div>
         </div>
       </section>
       <div class="action-row">
