@@ -1071,7 +1071,20 @@ function renderProfileEmblem(results) {
   const secondarySoft = mixHex(secondary.accent, "#FFFFFF", 0.82);
   const iconPath = results.guideProfile ? profileIconPath(results.guideProfile) : "";
   const iconAlt = results.guideProfile ? `${results.guideProfile.name} icon` : "";
-  const emblemClass = iconPath ? "result-emblem has-artwork" : "result-emblem";
+  const emblemClass = iconPath ? "result-emblem result-emblem-artwork" : "result-emblem";
+
+  if (iconPath) {
+    return `
+      <figure
+        class="${emblemClass}"
+        style="--tone-a:${primary.accent};--tone-b:${secondary.accent};--tone-a-soft:${primarySoft};--tone-b-soft:${secondarySoft};"
+      >
+        <div class="result-emblem-shell">
+          <img class="result-emblem-image" src="${iconPath}" alt="${escapeHtml(iconAlt)}" loading="eager" decoding="async" />
+        </div>
+      </figure>
+    `;
+  }
 
   return `
     <figure

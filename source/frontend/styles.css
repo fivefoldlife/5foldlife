@@ -849,21 +849,27 @@ button {
   filter: drop-shadow(0 14px 20px rgba(0, 0, 0, 0.08));
 }
 
-.result-emblem.has-artwork .result-emblem-shell {
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(248, 246, 243, 0.96));
+.result-emblem-artwork .result-emblem-shell {
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  border-radius: 32px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.99), rgba(248, 246, 243, 0.97));
+  border: 1px solid rgba(230, 230, 230, 0.88);
+  box-shadow: var(--shadow-light);
 }
 
-.result-emblem.has-artwork .result-emblem-halo,
-.result-emblem.has-artwork .result-emblem-orbit,
-.result-emblem.has-artwork::before,
-.result-emblem.has-artwork::after {
+.result-emblem-artwork .result-emblem-image {
+  width: min(100%, 188px);
+  filter: none;
+}
+
+.result-emblem-artwork .result-emblem-halo,
+.result-emblem-artwork .result-emblem-orbit,
+.result-emblem-artwork .result-emblem-center,
+.result-emblem-artwork::before,
+.result-emblem-artwork::after {
   display: none;
-}
-
-.result-emblem.has-artwork .result-emblem-center {
-  background: rgba(255, 255, 255, 0.96);
-  backdrop-filter: none;
-  border: 1px solid rgba(230, 230, 230, 0.8);
 }
 
 .result-emblem-kicker,
