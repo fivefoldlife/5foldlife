@@ -75,10 +75,9 @@ button {
 }
 
 .brand-header {
-  display: flex;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
   align-items: center;
-  justify-content: space-between;
-  flex-wrap: wrap;
   gap: 16px;
   position: sticky;
   top: 12px;
@@ -106,14 +105,14 @@ button {
 
 .brand-controls {
   display: grid;
-  gap: 10px;
-  width: 100%;
+  justify-items: end;
+  width: auto;
 }
 
 .menu-buttons {
   display: flex;
   flex-wrap: wrap;
-  justify-content: flex-start;
+  justify-content: flex-end;
   gap: 8px;
 }
 
@@ -213,18 +212,6 @@ button {
   background: transparent;
   border: 1.5px solid var(--black);
   box-shadow: none;
-}
-
-.button-ghost {
-  color: var(--white);
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-}
-
-.button-small {
-  min-height: 42px;
-  padding: 0 16px;
-  font-size: 0.92rem;
 }
 
 .button-hero {
@@ -1187,15 +1174,6 @@ button {
     padding: 16px 18px;
   }
 
-  .brand-controls {
-    width: auto;
-    justify-items: end;
-  }
-
-  .menu-buttons {
-    justify-content: flex-end;
-  }
-
   .trait-grid {
     grid-template-columns: repeat(5, minmax(0, 1fr));
   }
@@ -1277,6 +1255,7 @@ button {
   }
 
   .brand-header {
+    grid-template-columns: minmax(0, 1fr);
     position: static;
     gap: 12px;
     padding: 12px;
@@ -1305,6 +1284,7 @@ button {
 
   .brand-controls {
     width: 100%;
+    justify-items: stretch;
   }
 
   .menu-buttons {
@@ -1326,10 +1306,6 @@ button {
 
   .menu-buttons .button-menu:last-child {
     grid-column: 1 / -1;
-  }
-
-  .button-small {
-    width: 100%;
   }
 
   .card {

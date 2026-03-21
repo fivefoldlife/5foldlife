@@ -511,16 +511,9 @@ function renderSiteFooter() {
 }
 
 function renderLanding(results) {
-  const progress = answeredCount();
-  const hasProgress = progress > 0 && !hasResults();
-
   return `
     <section class="screen screen-landing">
-      ${renderBrandHeader({
-        eyebrow: "5 Fold Life Discovery",
-        actionLabel: hasProgress || hasResults() ? "Start Over" : "",
-        action: hasProgress || hasResults() ? "reset" : "",
-      })}
+      ${renderBrandHeader()}
       <section class="landing-hero-grid">
         <section class="card card-hero">
           <p class="eyebrow">Spirit-led discovery</p>
@@ -584,11 +577,7 @@ function renderResources(results) {
 
   return `
     <section class="screen screen-resources">
-      ${renderBrandHeader({
-        eyebrow: "5 Fold Life Resources",
-        actionLabel: "Back Home",
-        action: "landing",
-      })}
+      ${renderBrandHeader()}
       <div class="hero hero-resources">
         <p class="eyebrow">Reference library</p>
         <h1>Explore all 20 designs</h1>
@@ -636,11 +625,7 @@ function renderResourceDetail(profileSlug, results) {
 
   return `
     <section class="screen screen-resource-detail">
-      ${renderBrandHeader({
-        eyebrow: "5 Fold Life Design Library",
-        actionLabel: RESOURCES_LABEL,
-        action: "resources",
-      })}
+      ${renderBrandHeader()}
       <section class="hero hero-resources hero-detail-layout">
         <div class="hero-detail-copy">
           <p class="eyebrow">Design profile</p>
@@ -666,11 +651,7 @@ function renderResourceDetail(profileSlug, results) {
 function renderHistory() {
   return `
     <section class="screen screen-history">
-      ${renderBrandHeader({
-        eyebrow: "5 Fold Life Results Archive",
-        actionLabel: "Back Home",
-        action: "landing",
-      })}
+      ${renderBrandHeader()}
       <div class="hero hero-resources">
         <p class="eyebrow">Saved discoveries</p>
         <h1>Previous results</h1>
@@ -747,11 +728,7 @@ function renderAssessment() {
 
   return `
     <section class="screen screen-assessment">
-      ${renderBrandHeader({
-        eyebrow: "5 Fold Life Discovery",
-        actionLabel: "Save & Exit",
-        action: "landing",
-      })}
+      ${renderBrandHeader()}
       <section class="card card-question">
         <p class="question-index">Spirit-led assessment</p>
         <h1>${escapeHtml(question.text)}</h1>
@@ -788,6 +765,7 @@ function renderAssessment() {
       </section>
       <div class="action-row">
         <button class="button button-secondary" data-action="back">Back</button>
+        <button class="button button-secondary" data-action="landing">Save & Exit</button>
         <span class="helper-copy">Selection saves automatically and advances to the next question.</span>
       </div>
     </section>
@@ -797,12 +775,7 @@ function renderAssessment() {
 function renderResults(results, { historic = false } = {}) {
   return `
     <section class="screen screen-results">
-      ${renderBrandHeader({
-        eyebrow: historic ? "5 Fold Life Saved Result" : "5 Fold Life Results",
-        actionLabel: historic ? HISTORY_LABEL : "Retake",
-        action: historic ? "history" : "start",
-        actionReset: historic ? "false" : "true",
-      })}
+      ${renderBrandHeader()}
       <div class="hero hero-results">
         <p class="eyebrow">${historic ? "Saved discovery" : "Your discovery is in"}</p>
         <h1>See Your Unique 5-Fold Design</h1>
@@ -867,7 +840,7 @@ function renderResults(results, { historic = false } = {}) {
   `;
 }
 
-function renderBrandHeader({ eyebrow, actionLabel, action, actionReset = "false" }) {
+function renderBrandHeader() {
   const progressAction = hasResults() ? "start" : answeredCount() > 0 ? "resume" : "start";
   const progressReset = hasResults() ? "true" : "false";
   const progressLabel = hasResults() ? "Retake Test" : answeredCount() > 0 ? "Continue Test" : "Discover";
@@ -877,7 +850,7 @@ function renderBrandHeader({ eyebrow, actionLabel, action, actionReset = "false"
       <div class="brand-lockup">
         <img class="brand-logo" src="./assets/fivefold-wordmark-dark.png" alt="5 Fold Life" />
         <div>
-          <p class="brand-eyebrow">${escapeHtml(eyebrow)}</p>
+          <p class="brand-eyebrow">5 Fold Life Discovery</p>
           <p class="brand-subtitle">Assessment + results</p>
         </div>
       </div>
@@ -895,11 +868,6 @@ function renderBrandHeader({ eyebrow, actionLabel, action, actionReset = "false"
           <button class="button button-menu ${state.screen === "resources" || state.screen === "resource-detail" ? "is-active" : ""}" data-action="resources">${RESOURCES_LABEL}</button>
           <button class="button button-menu ${state.screen === "history" || state.screen === "history-detail" ? "is-active" : ""}" data-action="history">${HISTORY_LABEL}</button>
         </nav>
-        ${
-          actionLabel
-            ? `<button class="button button-ghost button-small" data-action="${action}" data-reset="${actionReset}">${actionLabel}</button>`
-            : ""
-        }
       </div>
     </header>
   `;
