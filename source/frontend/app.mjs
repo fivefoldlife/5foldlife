@@ -868,8 +868,9 @@ function renderResults(results, { historic = false } = {}) {
 }
 
 function renderBrandHeader({ eyebrow, actionLabel, action, actionReset = "false" }) {
-  const progressAction = hasResults() ? "results" : answeredCount() > 0 ? "resume" : "start";
-  const progressLabel = hasResults() ? "My Design" : answeredCount() > 0 ? "Continue" : "Discover";
+  const progressAction = hasResults() ? "start" : answeredCount() > 0 ? "resume" : "start";
+  const progressReset = hasResults() ? "true" : "false";
+  const progressLabel = hasResults() ? "Retake Test" : answeredCount() > 0 ? "Continue Test" : "Discover";
 
   return `
     <header class="brand-header">
@@ -886,6 +887,7 @@ function renderBrandHeader({ eyebrow, actionLabel, action, actionReset = "false"
           <button
             class="button button-menu ${state.screen === "assessment" || state.screen === "results" ? "is-active" : ""}"
             data-action="${progressAction}"
+            data-reset="${progressReset}"
           >
             ${progressLabel}
           </button>
