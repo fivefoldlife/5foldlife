@@ -511,63 +511,49 @@ function renderSiteFooter() {
 }
 
 function renderLanding(results) {
+  const progress = answeredCount();
+  const latestEntry = getLatestHistoryEntry();
+
   return `
     <section class="screen screen-landing">
       ${renderBrandHeader()}
       <section class="landing-hero-grid">
         <section class="card card-hero">
-          <p class="eyebrow">Spirit-led discovery</p>
-          <h1>Discover the five-fold design that shapes how you build, discern, invite, nurture, and equip.</h1>
+          <p class="eyebrow">Companion assessment</p>
+          <h1>Take the 5 Fold Life assessment with a simpler, saved-on-this-device workflow.</h1>
           <button class="button button-accent button-hero" data-action="start" data-reset="true">Start Discovery</button>
-          <p class="hero-copy">Take a guided assessment, uncover your strongest expression, and explore a polished library of all 20 designs in one place.</p>
+          <p class="hero-copy">Use this companion tool to move quickly through the test, reopen your latest design, and keep previous discoveries easy to reference.</p>
           <div class="hero-meta-row">
             <span>50 questions</span>
-            <span>10-15 minutes</span>
+            <span>Auto-saves progress</span>
             <span>20 full design references</span>
           </div>
         </section>
         <section class="card card-hero-side">
           <div class="section-head">
-            <h3>What you'll walk away with</h3>
-            <p>A cleaner, more useful experience for learning how your design works in real life.</p>
+            <h3>Built for quick access</h3>
+            <p>This version is tuned for people who already know the framework and just want a clean way to take the test and revisit results.</p>
           </div>
           <div class="highlight-list">
             <article class="highlight-item">
-              <p class="card-kicker">Personal result</p>
-              <h3>Your design in focus</h3>
-              <p class="text-copy">See your top expression, your five-gift ordering, and the language that best names how you naturally show up.</p>
+              <p class="card-kicker">Quick finish</p>
+              <h3>Fast, guided test flow</h3>
+              <p class="text-copy">Move through the assessment with simple 1 to 5 taps, automatic progress saving, and immediate results.</p>
             </article>
             <article class="highlight-item">
-              <p class="card-kicker">Healthy range</p>
-              <h3>Fight, flow, and maturity</h3>
-              <p class="text-copy">Review the contrast between unhealthy drift and Spirit-led expression, plus the seven levels of health.</p>
+              <p class="card-kicker">Personal dashboard</p>
+              <h3>Return to your design</h3>
+              <p class="text-copy">Open your current result, revisit earlier discoveries, and jump back in without losing your place.</p>
             </article>
             <article class="highlight-item">
               <p class="card-kicker">Reference library</p>
               <h3>All 20 designs</h3>
-              <p class="text-copy">Jump straight into the full content library whenever you want to compare profiles or study the complete guide.</p>
+              <p class="text-copy">Compare the full design set anytime so the site works like a practical companion library, not just a one-time quiz.</p>
             </article>
           </div>
         </section>
       </section>
-      ${
-        results
-          ? `
-            <section class="card card-preview">
-              <div class="section-head">
-                <h3>Latest discovery</h3>
-                <p>${escapeHtml(results.profileSummary)}</p>
-              </div>
-              <div class="pill-row">
-                ${renderGiftPill(results.primary.gift, `${results.primary.meta.adjective} (Foundational)`, true)}
-                ${renderGiftPill(results.secondary.gift, `${results.secondary.meta.adjective} (Secondary)`)}
-              </div>
-              ${renderMiniScores(results.ranking)}
-              <button class="button button-secondary" data-action="results">View latest results</button>
-            </section>
-          `
-          : ""
-      }
+      ${renderLandingUtilityCard({ results, progress, latestEntry })}
     </section>
   `;
 }
@@ -649,6 +635,8 @@ function renderResourceDetail(profileSlug, results) {
 }
 
 function renderHistory() {
+  const currentResults = hasResults() ? buildResults() : null;
+
   return `
     <section class="screen screen-history">
       ${renderBrandHeader()}
@@ -657,6 +645,24 @@ function renderHistory() {
         <h1>Previous results</h1>
         <p class="hero-copy">Review earlier assessment outcomes and reopen any design result you have already discovered.</p>
       </div>
+      ${
+        currentResults
+          ? renderUtilityCard({
+              kicker: "Current design",
+              title: currentResults.profileName,
+              copy: "Your latest completed assessment is still available on this device, so you can jump straight back into it or start a fresh test.",
+              meta: [
+                formatSavedStatus(getCurrentSavedEntry()),
+                `${currentResults.primary.meta.label} core`,
+                `${currentResults.secondary.meta.label} companion`,
+              ],
+              actions: [
+                { label: "Open My Design", action: "results", variant: "button-accent" },
+                { label: "Start Fresh Test", action: "start", reset: "true", variant: "button-secondary" },
+              ],
+            })
+          : ""
+      }
       ${
         state.resultHistory.length
           ? `
@@ -705,6 +711,11 @@ function renderHistoryCard(entry) {
       </div>
       <div class="action-row">
         <button class="button button-secondary" data-action="history-detail" data-history-id="${entry.id}">Open Result</button>
+        ${
+          entry.profileSlug
+            ? `<button class="button button-outline" data-action="resource-detail" data-profile="${entry.profileSlug}">Open Design Page</button>`
+            : ""
+        }
       </div>
     </article>
   `;
@@ -725,12 +736,18 @@ function renderAssessment() {
   const question = QUESTIONS[state.currentQuestion];
   const selected = state.answers[state.currentQuestion];
   const percent = Math.round(((state.currentQuestion + 1) / QUESTIONS.length) * 100);
+  const remaining = QUESTIONS.length - (state.currentQuestion + 1);
 
   return `
     <section class="screen screen-assessment">
       ${renderBrandHeader()}
       <section class="card card-question">
         <p class="question-index">Spirit-led assessment</p>
+        <div class="meta-row assessment-status">
+          <span>Question ${question.id} of ${QUESTIONS.length}</span>
+          <span>${remaining} remaining</span>
+          <span>Auto-saves on this device</span>
+        </div>
         <h1>${escapeHtml(question.text)}</h1>
         <p class="question-copy">Choose the response that feels most natural to you right now.</p>
         <div class="choice-scale" aria-hidden="true">
@@ -773,6 +790,8 @@ function renderAssessment() {
 }
 
 function renderResults(results, { historic = false } = {}) {
+  const currentEntry = historic ? getHistoryEntryById(state.selectedHistoryId) : getCurrentSavedEntry();
+
   return `
     <section class="screen screen-results">
       ${renderBrandHeader()}
@@ -781,6 +800,31 @@ function renderResults(results, { historic = false } = {}) {
         <h1>See Your Unique 5-Fold Design</h1>
         <p class="hero-copy">Understand the blend God placed in you and explore the full guide for how it shows up in real life.</p>
       </div>
+      ${renderUtilityCard({
+        kicker: historic ? "Saved result" : "Current result",
+        title: historic ? "Result tools" : "What would you like to do next?",
+        copy: historic
+          ? "This saved result stays available for reference, comparison, or reopening alongside your current design."
+          : "Your result is saved on this device. You can compare all designs, revisit your archive, or start a fresh assessment anytime.",
+        meta: [
+          formatSavedStatus(currentEntry),
+          `${results.primary.meta.label} core`,
+          `${results.secondary.meta.label} companion`,
+        ],
+        actions: historic
+          ? [
+              ...(hasResults()
+                ? [{ label: "Open Current Result", action: "results", variant: "button-accent" }]
+                : [{ label: "Start Discovery", action: "start", reset: "true", variant: "button-accent" }]),
+              { label: RESOURCES_LABEL, action: "resources", variant: "button-secondary" },
+              { label: HISTORY_LABEL, action: "history", variant: "button-outline" },
+            ]
+          : [
+              { label: RESOURCES_LABEL, action: "resources", variant: "button-secondary" },
+              { label: HISTORY_LABEL, action: "history", variant: "button-outline" },
+              { label: "Retake Discovery", action: "start", reset: "true", variant: "button-accent" },
+            ],
+      })}
       <section class="card card-spotlight">
         <div class="result-header">
           <div>
@@ -825,25 +869,15 @@ function renderResults(results, { historic = false } = {}) {
           ? renderGuideProfileCard(results.guideProfile)
           : renderGuideStatusCard()
       }
-      <div class="action-row">
-        <button class="button button-secondary" data-action="${historic ? "history" : "landing"}">${historic ? HISTORY_LABEL : "Back Home"}</button>
-        <button class="button button-secondary" data-action="resources">${RESOURCES_LABEL}</button>
-        ${
-          historic
-            ? hasResults()
-              ? `<button class="button button-accent" data-action="results">Open Current Result</button>`
-              : `<button class="button button-accent" data-action="start" data-reset="true">Start Discovery</button>`
-            : `<button class="button button-accent" data-action="start" data-reset="true">Retake Discovery</button>`
-        }
-      </div>
     </section>
   `;
 }
 
 function renderBrandHeader() {
-  const progressAction = hasResults() ? "start" : answeredCount() > 0 ? "resume" : "start";
+  const hasPartialProgress = answeredCount() > 0 && !hasResults();
+  const progressAction = hasPartialProgress ? "resume" : "start";
   const progressReset = hasResults() ? "true" : "false";
-  const progressLabel = hasResults() ? "Retake Test" : answeredCount() > 0 ? "Continue Test" : "Discover";
+  const progressLabel = hasPartialProgress ? "Resume Test" : "Start Test";
 
   return `
     <header class="brand-header">
@@ -858,7 +892,7 @@ function renderBrandHeader() {
         <nav class="menu-buttons" aria-label="Primary navigation">
           <button class="button button-menu ${state.screen === "landing" ? "is-active" : ""}" data-action="landing">Home</button>
           <button
-            class="button button-menu ${state.screen === "assessment" || state.screen === "results" ? "is-active" : ""}"
+            class="button button-menu ${state.screen === "assessment" ? "is-active" : ""}"
             data-action="${progressAction}"
             data-reset="${progressReset}"
           >
@@ -870,6 +904,112 @@ function renderBrandHeader() {
         </nav>
       </div>
     </header>
+  `;
+}
+
+function renderLandingUtilityCard({ results, progress, latestEntry }) {
+  if (progress > 0 && !hasResults()) {
+    return renderUtilityCard({
+      kicker: "Continue later",
+      title: `Resume from question ${state.currentQuestion + 1}`,
+      copy: "Your partial assessment is already saved on this device, so you can jump back in right where you stopped.",
+      meta: [`${progress} of ${QUESTIONS.length} answered`, `${QUESTIONS.length - progress} left`, "Auto-saves on this device"],
+      actions: [
+        { label: "Continue Test", action: "resume", variant: "button-accent" },
+        { label: "Start Over", action: "reset", variant: "button-secondary" },
+        ...(state.resultHistory.length ? [{ label: HISTORY_LABEL, action: "history", variant: "button-outline" }] : []),
+      ],
+    });
+  }
+
+  if (results) {
+    return renderUtilityCard({
+      kicker: "Quick access",
+      title: `${results.profileName} is ready`,
+      copy: "Open your current design, compare it with the full library, or review your saved results archive anytime.",
+      meta: [
+        formatSavedStatus(getCurrentSavedEntry()),
+        `${results.primary.meta.label} core`,
+        `${results.secondary.meta.label} companion`,
+      ],
+      actions: [
+        { label: "Open My Design", action: "results", variant: "button-accent" },
+        { label: RESOURCES_LABEL, action: "resources", variant: "button-secondary" },
+        { label: HISTORY_LABEL, action: "history", variant: "button-outline" },
+      ],
+    });
+  }
+
+  if (latestEntry) {
+    return renderUtilityCard({
+      kicker: "Saved on this device",
+      title: "Jump back into your latest design",
+      copy: "Your earlier discoveries are still available here, so you do not need to retake the assessment just to review past results.",
+      meta: [formatSavedStatus(latestEntry), latestEntry.profileName, "Previous results stay easy to reopen"],
+      actions: [
+        { label: "Open My Design", action: "my-design", variant: "button-accent" },
+        { label: "Start Discovery", action: "start", reset: "true", variant: "button-secondary" },
+        { label: HISTORY_LABEL, action: "history", variant: "button-outline" },
+      ],
+    });
+  }
+
+  return renderUtilityCard({
+    kicker: "Use this companion tool",
+    title: "Simple test, simple results access",
+    copy: "Start the assessment, save progress on this device, and use the design library as a quick companion reference whenever you need it.",
+    meta: ["50 guided questions", "Instant personal result", "20 design reference pages"],
+    actions: [
+      { label: "Start Discovery", action: "start", reset: "true", variant: "button-accent" },
+      { label: RESOURCES_LABEL, action: "resources", variant: "button-outline" },
+    ],
+  });
+}
+
+function renderUtilityCard({ kicker, title, copy, meta = [], actions = [] }) {
+  return `
+    <section class="card card-utility">
+      <div class="section-head">
+        <p class="card-kicker">${escapeHtml(kicker)}</p>
+        <h3>${escapeHtml(title)}</h3>
+        <p>${escapeHtml(copy)}</p>
+      </div>
+      ${
+        meta.length
+          ? `
+            <div class="meta-row utility-meta-row">
+              ${meta
+                .map(
+                  (item) => `
+                    <span>${escapeHtml(item)}</span>
+                  `
+                )
+                .join("")}
+            </div>
+          `
+          : ""
+      }
+      ${
+        actions.length
+          ? `
+            <div class="button-stack-inline utility-actions">
+              ${actions.map((action) => renderUtilityAction(action)).join("")}
+            </div>
+          `
+          : ""
+      }
+    </section>
+  `;
+}
+
+function renderUtilityAction({ label, action, variant = "button-secondary", reset = "false", historyId = "", profile = "" }) {
+  const historyAttr = historyId ? ` data-history-id="${escapeHtml(historyId)}"` : "";
+  const profileAttr = profile ? ` data-profile="${escapeHtml(profile)}"` : "";
+
+  return `
+    <button class="button ${variant}" data-action="${action}" data-reset="${reset}"${historyAttr}${profileAttr}>
+      ${escapeHtml(label)}
+    </button>
   `;
 }
 
@@ -1131,6 +1271,15 @@ function getLatestHistoryEntry() {
   return state.resultHistory[0] || null;
 }
 
+function getCurrentSavedEntry() {
+  if (!hasResults()) {
+    return null;
+  }
+
+  const key = answersKey(state.answers);
+  return state.resultHistory.find((entry) => entry.answerKey === key) || null;
+}
+
 function renderFiveC(results) {
   const map = [
     { label: "Core", entry: results.primary },
@@ -1320,6 +1469,10 @@ function formatResultDate(value) {
     hour: "numeric",
     minute: "2-digit",
   }).format(date);
+}
+
+function formatSavedStatus(entry) {
+  return entry ? `Saved ${formatResultDate(entry.savedAt)}` : "Saved on this device";
 }
 
 function slugify(value) {

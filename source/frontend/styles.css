@@ -470,9 +470,25 @@ button {
 
 .card-traits,
 .card-preview,
-.card-resource-nav {
+.card-resource-nav,
+.card-utility {
   display: grid;
   gap: 18px;
+}
+
+.card-utility {
+  background:
+    radial-gradient(circle at top right, rgba(53, 94, 138, 0.08), transparent 30%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.99), rgba(249, 249, 249, 0.97));
+}
+
+.utility-meta-row span {
+  background: rgba(255, 255, 255, 0.9);
+}
+
+.utility-actions {
+  justify-content: flex-start;
+  gap: 12px;
 }
 
 .history-stack {
@@ -651,6 +667,14 @@ button {
   padding-block: 18px 16px;
 }
 
+.assessment-status {
+  gap: 8px;
+}
+
+.assessment-status span {
+  background: rgba(255, 255, 255, 0.92);
+}
+
 .card-question-progress {
   display: grid;
   gap: 8px;
@@ -745,7 +769,7 @@ button {
 .action-row {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-start;
   gap: 12px;
   flex-wrap: wrap;
 }
@@ -1328,6 +1352,26 @@ button {
     min-height: 34px;
     padding: 0 12px;
     font-size: 0.8rem;
+  }
+
+  .utility-actions {
+    display: grid;
+    grid-template-columns: 1fr;
+    align-items: stretch;
+  }
+
+  .utility-actions .button {
+    width: 100%;
+  }
+
+  .assessment-status {
+    gap: 6px;
+  }
+
+  .assessment-status span {
+    min-height: 32px;
+    padding: 0 10px;
+    font-size: 0.76rem;
   }
 
   .detail-hero-art {
