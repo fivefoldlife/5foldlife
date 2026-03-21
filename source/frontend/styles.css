@@ -28,13 +28,17 @@
 
 html {
   scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+  background: var(--grey-50);
 }
 
 body {
   margin: 0;
   min-height: 100vh;
+  min-height: 100dvh;
   color: var(--black);
   background: linear-gradient(180deg, #ffffff 0%, #ffffff 26%, #faf9f7 100%);
+  overflow-x: hidden;
 }
 
 img {
@@ -49,10 +53,13 @@ input {
 
 button {
   border: none;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
 }
 
 .app-frame {
   min-height: 100vh;
+  min-height: 100dvh;
 }
 
 .app-shell {
@@ -1253,6 +1260,138 @@ button {
   .card-discovery .button {
     width: auto;
     justify-self: start;
+  }
+}
+
+@media (max-width: 640px) {
+  .app-shell {
+    padding:
+      max(12px, env(safe-area-inset-top))
+      max(12px, env(safe-area-inset-right))
+      calc(68px + env(safe-area-inset-bottom))
+      max(12px, env(safe-area-inset-left));
+  }
+
+  .screen {
+    gap: 14px;
+  }
+
+  .brand-header {
+    position: static;
+    gap: 12px;
+    padding: 12px;
+    border-radius: 20px;
+  }
+
+  .brand-lockup {
+    gap: 10px;
+    align-items: flex-start;
+  }
+
+  .brand-logo {
+    width: clamp(132px, 42vw, 172px);
+  }
+
+  .brand-eyebrow,
+  .brand-subtitle {
+    font-size: 0.76rem;
+  }
+
+  .menu-buttons {
+    gap: 6px;
+  }
+
+  .button-menu {
+    min-height: 38px;
+    padding: 0 12px;
+    font-size: 0.84rem;
+  }
+
+  .button-small {
+    width: 100%;
+  }
+
+  .card {
+    padding: 18px;
+    border-radius: 22px;
+  }
+
+  .button-hero {
+    width: 100%;
+    max-width: 360px;
+    min-height: 64px;
+    font-size: 1.04rem;
+  }
+
+  .hero-copy {
+    font-size: 0.96rem;
+  }
+
+  .hero-meta-row span {
+    min-height: 34px;
+    padding: 0 12px;
+    font-size: 0.8rem;
+  }
+
+  .detail-hero-art {
+    justify-self: center;
+  }
+
+  .detail-hero-art-shell {
+    width: min(100%, 240px);
+    border-radius: 34px;
+  }
+
+  .detail-hero-art-shell img {
+    width: min(100%, 192px);
+  }
+
+  .result-emblem {
+    width: min(100%, 220px);
+  }
+
+  .history-card-art {
+    width: 84px;
+    height: 84px;
+  }
+
+  .history-card-art img {
+    width: 62px;
+    height: 62px;
+  }
+
+  .progress-topline {
+    font-size: 0.76rem;
+  }
+
+  .choice-scale {
+    font-size: 0.68rem;
+  }
+
+  .choice-list {
+    gap: 6px;
+  }
+
+  .choice-button {
+    min-height: 46px;
+    padding: 6px 4px;
+  }
+
+  .choice-value {
+    font-size: 0.88rem;
+  }
+
+  .action-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .action-row .button {
+    width: 100%;
+  }
+
+  .helper-copy {
+    text-align: center;
   }
 }
 
