@@ -1013,7 +1013,7 @@ button {
 }
 
 .detail-hero-art-shell img {
-  width: min(100%, 236px);
+  width: min(100%, 268px);
   height: auto;
   object-fit: contain;
 }
@@ -1390,7 +1390,7 @@ button {
   }
 
   .detail-hero-art-shell img {
-    width: min(100%, 192px);
+    width: min(100%, 216px);
   }
 
   .result-emblem {
