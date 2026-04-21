@@ -1246,6 +1246,18 @@ button {
   color: var(--grey-700);
 }
 
+.score-pill {
+  gap: 8px;
+  border: 1px solid currentColor;
+}
+
+.score-pill-icon {
+  width: 22px;
+  height: 22px;
+  color: currentColor;
+  background-color: currentColor;
+}
+
 .text-block {
   display: grid;
   gap: 5px;

@@ -1555,29 +1555,28 @@ function renderFiveC(results) {
 function renderScoreRow(entry, index, results) {
   const variant =
     index === 0 ? "primary" : index === 1 ? "secondary" : "neutral";
-  const tone =
-    variant === "neutral"
-      ? "#3D3D3D"
-      : entry.meta.accent;
+  const tone = entry.meta.accent;
   const background =
     variant === "primary"
       ? tone
       : variant === "secondary"
         ? mixHex(tone, "#FFFFFF", 0.78)
-        : "#E6E6E6";
+        : mixHex(tone, "#FFFFFF", 0.9);
   const labelColor = variant === "primary" ? "#FFFFFF" : tone;
 
   return `
     <div class="score-row">
       <div class="score-meta">
         <div class="score-label">
-          <div class="trait-icon" style="--icon:url('${entry.meta.icon}');color:${tone}"></div>
           <div>
             <strong>${entry.meta.label}</strong>
             <span>${entry.meta.trait}</span>
           </div>
         </div>
-        <span class="score-pill" style="background:${background};color:${labelColor};">${entry.percentage}%</span>
+        <span class="score-pill" style="background:${background};color:${labelColor};--tone:${tone};">
+          <span class="score-pill-icon trait-icon" style="--icon:url('${entry.meta.icon}');"></span>
+          ${entry.percentage}%
+        </span>
       </div>
       <div class="score-track ${variant}">
         <div class="score-fill" style="width:${entry.percentage}%;background:${tone};"></div>
