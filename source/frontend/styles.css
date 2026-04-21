@@ -496,9 +496,32 @@ button {
   gap: 16px;
 }
 
+.card-history-toolbar,
+.card-history-compare,
+.card-anchor-nav {
+  display: grid;
+  gap: 16px;
+}
+
+.toolbar-actions,
+.anchor-actions,
+.compare-actions {
+  justify-content: flex-start;
+  gap: 10px;
+}
+
 .history-card {
   display: grid;
   gap: 16px;
+  transition:
+    transform 0.18s ease,
+    border-color 0.18s ease,
+    box-shadow 0.18s ease;
+}
+
+.history-card.is-compare-selected {
+  border-color: rgba(204, 85, 0, 0.42);
+  box-shadow: 0 16px 28px rgba(204, 85, 0, 0.12);
 }
 
 .history-card-top {
@@ -525,6 +548,47 @@ button {
 .section-head {
   display: grid;
   gap: 6px;
+}
+
+.compare-grid {
+  display: grid;
+  gap: 14px;
+}
+
+.compare-column {
+  display: grid;
+  gap: 12px;
+  padding: 18px;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--grey-200);
+  background: linear-gradient(180deg, rgba(249, 249, 249, 0.96), rgba(255, 255, 255, 0.98));
+}
+
+.compare-stats {
+  display: grid;
+  gap: 10px;
+}
+
+.compare-stat {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 42px;
+  padding: 0 14px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid var(--grey-200);
+}
+
+.compare-stat span {
+  font-size: 0.82rem;
+  color: var(--grey-700);
+  text-transform: uppercase;
+}
+
+.compare-stat strong {
+  font-size: 0.96rem;
 }
 
 .trait-grid {
@@ -777,6 +841,26 @@ button {
 .helper-copy {
   font-size: 0.76rem;
   line-height: 1.4;
+}
+
+.result-summary-grid {
+  display: grid;
+  gap: 14px;
+}
+
+.result-summary-card {
+  gap: 8px;
+  padding: 18px 20px;
+  border-top: 4px solid var(--summary-accent, var(--black));
+}
+
+.result-summary-card h3 {
+  font-size: 1.08rem;
+}
+
+[id^="current-result-"],
+[id^="saved-result-"] {
+  scroll-margin-top: 110px;
 }
 
 .card-spotlight {
@@ -1218,6 +1302,10 @@ button {
     align-items: start;
   }
 
+  .compare-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
   .hero-detail-layout {
     grid-template-columns: minmax(0, 1fr) minmax(220px, 320px);
     align-items: start;
@@ -1243,6 +1331,10 @@ button {
 
   .results-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .result-summary-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
   }
 
   .resource-stack {
@@ -1370,6 +1462,20 @@ button {
     width: 100%;
   }
 
+  .toolbar-actions,
+  .anchor-actions,
+  .compare-actions {
+    display: grid;
+    grid-template-columns: 1fr;
+    align-items: stretch;
+  }
+
+  .toolbar-actions .button,
+  .anchor-actions .button,
+  .compare-actions .button {
+    width: 100%;
+  }
+
   .assessment-status {
     gap: 6px;
   }
@@ -1395,6 +1501,10 @@ button {
 
   .result-emblem {
     width: min(100%, 220px);
+  }
+
+  .result-summary-grid {
+    grid-template-columns: 1fr;
   }
 
   .history-card-art {

@@ -18,6 +18,7 @@ let guideLoadError = "";
 const state = loadState();
 
 root.addEventListener("click", handleClick);
+window.addEventListener("keydown", handleKeydown);
 render();
 
 function loadState() {
@@ -40,6 +41,8 @@ function loadState() {
     const resultHistory = normalizeResultHistory(raw.resultHistory);
     const selectedHistoryId = normalizeSelectedHistoryId(raw.selectedHistoryId, resultHistory);
     const savedResultKey = typeof raw.savedResultKey === "string" ? raw.savedResultKey : null;
+    const historySort = normalizeHistorySort(raw.historySort);
+    const compareHistoryIds = normalizeCompareHistoryIds(raw.compareHistoryIds, resultHistory);
 
     return {
       answers,
@@ -49,6 +52,8 @@ function loadState() {
       resultHistory,
       selectedHistoryId,
       savedResultKey,
+      historySort,
+      compareHistoryIds,
     };
   } catch (error) {
     console.warn("Unable to restore saved discovery state.", error);
@@ -60,6 +65,8 @@ function loadState() {
       resultHistory: [],
       selectedHistoryId: null,
       savedResultKey: null,
+      historySort: "newest",
+      compareHistoryIds: [],
     };
   }
 }
@@ -101,6 +108,8 @@ function persistState() {
     resultHistory: state.resultHistory,
     selectedHistoryId: state.selectedHistoryId,
     savedResultKey: state.savedResultKey,
+    historySort: state.historySort,
+    compareHistoryIds: state.compareHistoryIds,
   };
 
   window.localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
@@ -121,6 +130,7 @@ function clearAssessment() {
   state.selectedProfile = null;
   state.selectedHistoryId = null;
   state.savedResultKey = null;
+  state.compareHistoryIds = [];
   persistState();
   render();
   scrollToTop();
@@ -152,6 +162,7 @@ function startDiscovery({ reset = false } = {}) {
   state.screen = "assessment";
   state.selectedProfile = null;
   state.selectedHistoryId = null;
+  state.compareHistoryIds = [];
 
   if (reset) {
     state.savedResultKey = null;
@@ -173,6 +184,7 @@ function showResults() {
   state.screen = "results";
   state.selectedProfile = null;
   state.selectedHistoryId = null;
+  state.compareHistoryIds = [];
   persistState();
   render();
   scrollToTop();
@@ -206,6 +218,7 @@ function showLanding() {
   state.screen = "landing";
   state.selectedProfile = null;
   state.selectedHistoryId = null;
+  state.compareHistoryIds = [];
   persistState();
   render();
   scrollToTop();
@@ -216,6 +229,7 @@ function showResources() {
   state.screen = "resources";
   state.selectedProfile = null;
   state.selectedHistoryId = null;
+  state.compareHistoryIds = [];
   persistState();
   render();
   scrollToTop();
@@ -263,6 +277,7 @@ function showHistoryDetail(historyId) {
   state.screen = "history-detail";
   state.selectedProfile = null;
   state.selectedHistoryId = historyId;
+  state.compareHistoryIds = [];
   persistState();
   render();
   scrollToTop();
@@ -305,7 +320,7 @@ function setAnswer(value) {
 
     persistState();
     render();
-  }, 35);
+  }, 10);
 }
 
 function clearAdvanceTimer() {
@@ -358,6 +373,18 @@ function handleClick(event) {
     case "history-detail":
       showHistoryDetail(button.dataset.historyId);
       break;
+    case "history-sort":
+      setHistorySort(button.dataset.sort);
+      break;
+    case "toggle-compare":
+      toggleHistoryCompare(button.dataset.historyId);
+      break;
+    case "clear-compare":
+      clearHistoryCompare();
+      break;
+    case "jump":
+      scrollToSection(button.dataset.target);
+      break;
     case "reset":
       clearAssessment();
       break;
@@ -370,6 +397,74 @@ function handleClick(event) {
     default:
       break;
   }
+}
+
+function handleKeydown(event) {
+  if (state.screen !== "assessment") {
+    return;
+  }
+
+  const target = event.target;
+
+  if (
+    target instanceof HTMLElement &&
+    (target.isContentEditable ||
+      ["INPUT", "TEXTAREA", "SELECT", "BUTTON"].includes(target.tagName))
+  ) {
+    return;
+  }
+
+  if (!["1", "2", "3", "4", "5"].includes(event.key)) {
+    return;
+  }
+
+  event.preventDefault();
+  setAnswer(Number(event.key));
+}
+
+function setHistorySort(value) {
+  state.historySort = normalizeHistorySort(value);
+  persistState();
+  render();
+}
+
+function toggleHistoryCompare(historyId) {
+  if (!getHistoryEntryById(historyId)) {
+    return;
+  }
+
+  if (state.compareHistoryIds.includes(historyId)) {
+    state.compareHistoryIds = state.compareHistoryIds.filter((id) => id !== historyId);
+  } else {
+    state.compareHistoryIds = [...state.compareHistoryIds, historyId].slice(-2);
+  }
+
+  persistState();
+  render();
+}
+
+function clearHistoryCompare() {
+  if (!state.compareHistoryIds.length) {
+    return;
+  }
+
+  state.compareHistoryIds = [];
+  persistState();
+  render();
+}
+
+function scrollToSection(targetId) {
+  if (!targetId) {
+    return;
+  }
+
+  const target = document.getElementById(targetId);
+
+  if (!target) {
+    return;
+  }
+
+  target.scrollIntoView({ behavior: "smooth", block: "start" });
 }
 
 function buildResults() {
@@ -636,6 +731,10 @@ function renderResourceDetail(profileSlug, results) {
 
 function renderHistory() {
   const currentResults = hasResults() ? buildResults() : null;
+  const entries = getSortedHistoryEntries();
+  const compareEntries = state.compareHistoryIds
+    .map((historyId) => getHistoryEntryById(historyId))
+    .filter(Boolean);
 
   return `
     <section class="screen screen-history">
@@ -663,11 +762,28 @@ function renderHistory() {
             })
           : ""
       }
+      <section class="card card-history-toolbar">
+        <div class="section-head">
+          <h3>Browse saved results</h3>
+          <p>Sort your history, pick up to two results to compare, and reopen any saved design when you need it.</p>
+        </div>
+        <div class="button-stack-inline toolbar-actions">
+          ${renderHistorySortButton("Newest first", "newest")}
+          ${renderHistorySortButton("Oldest first", "oldest")}
+          ${renderHistorySortButton("Profile name", "profile")}
+          ${
+            compareEntries.length
+              ? `<button class="button button-outline" data-action="clear-compare">Clear Compare</button>`
+              : ""
+          }
+        </div>
+      </section>
+      ${compareEntries.length === 2 ? renderHistoryCompare(compareEntries) : ""}
       ${
-        state.resultHistory.length
+        entries.length
           ? `
             <section class="history-stack">
-              ${state.resultHistory.map((entry) => renderHistoryCard(entry)).join("")}
+              ${entries.map((entry) => renderHistoryCard(entry)).join("")}
             </section>
           `
           : `
@@ -686,9 +802,10 @@ function renderHistory() {
 function renderHistoryCard(entry) {
   const primary = GIFTS[entry.primaryGift];
   const secondary = GIFTS[entry.secondaryGift];
+  const isCompareSelected = state.compareHistoryIds.includes(entry.id);
 
   return `
-    <article class="card history-card">
+    <article class="card history-card ${isCompareSelected ? "is-compare-selected" : ""}">
       <div class="history-card-top">
         <div class="section-head">
           <p class="card-kicker">${escapeHtml(formatResultDate(entry.savedAt))}</p>
@@ -716,6 +833,9 @@ function renderHistoryCard(entry) {
             ? `<button class="button button-outline" data-action="resource-detail" data-profile="${entry.profileSlug}">Open Design Page</button>`
             : ""
         }
+        <button class="button ${isCompareSelected ? "button-accent" : "button-outline"}" data-action="toggle-compare" data-history-id="${entry.id}">
+          ${isCompareSelected ? "Selected for Compare" : "Compare"}
+        </button>
       </div>
     </article>
   `;
@@ -783,7 +903,7 @@ function renderAssessment() {
       <div class="action-row">
         <button class="button button-secondary" data-action="back">Back</button>
         <button class="button button-secondary" data-action="landing">Save & Exit</button>
-        <span class="helper-copy">Selection saves automatically and advances to the next question.</span>
+        <span class="helper-copy">Selection saves automatically, advances immediately, and also works with number keys 1 to 5.</span>
       </div>
     </section>
   `;
@@ -791,6 +911,7 @@ function renderAssessment() {
 
 function renderResults(results, { historic = false } = {}) {
   const currentEntry = historic ? getHistoryEntryById(state.selectedHistoryId) : getCurrentSavedEntry();
+  const resultPrefix = historic ? "saved-result" : "current-result";
 
   return `
     <section class="screen screen-results">
@@ -825,7 +946,22 @@ function renderResults(results, { historic = false } = {}) {
               { label: "Retake Discovery", action: "start", reset: "true", variant: "button-accent" },
             ],
       })}
-      <section class="card card-spotlight">
+      <section class="card card-anchor-nav">
+        <div class="button-stack-inline anchor-actions">
+          ${renderJumpButton("Overview", `${resultPrefix}-overview`)}
+          ${renderJumpButton("Score Map", `${resultPrefix}-scores`)}
+          ${renderJumpButton("5C Snapshot", `${resultPrefix}-five-c`)}
+          ${renderJumpButton("Full Profile", `${resultPrefix}-profile`)}
+          ${renderJumpButton("Health Levels", `${resultPrefix}-health`)}
+        </div>
+      </section>
+      <section class="result-summary-grid">
+        ${renderResultSummaryCard("Primary", results.primary.meta.label, `${results.primary.percentage}% match`, results.primary.meta.accent)}
+        ${renderResultSummaryCard("Companion", results.secondary.meta.label, `${results.secondary.percentage}% match`, results.secondary.meta.accent)}
+        ${renderResultSummaryCard("Conditional", results.conditional.meta.label, `${results.conditional.percentage}% match`, results.conditional.meta.accent)}
+        ${renderResultSummaryCard("Saved", currentEntry ? formatResultDate(currentEntry.savedAt) : "This session", historic ? "Archive result" : "Current result", "#1a1a1a")}
+      </section>
+      <section class="card card-spotlight" id="${resultPrefix}-overview">
         <div class="result-header">
           <div>
             <p class="card-kicker">Profile Name</p>
@@ -845,7 +981,7 @@ function renderResults(results, { historic = false } = {}) {
         </div>
       </section>
       <section class="results-grid">
-        <section class="card">
+        <section class="card" id="${resultPrefix}-scores">
           <div class="section-head">
             <h3>Score Map</h3>
             <p>Primary and secondary expressions rise to the top, but every gift still carries weight in your design.</p>
@@ -854,7 +990,7 @@ function renderResults(results, { historic = false } = {}) {
             ${results.ranking.map((entry, index) => renderScoreRow(entry, index, results)).join("")}
           </div>
         </section>
-        <section class="card">
+        <section class="card" id="${resultPrefix}-five-c">
           <div class="section-head">
             <h3>5C Snapshot</h3>
             <p>Your result orders all five natures by strength so you can see both your natural lane and your growth edges.</p>
@@ -866,7 +1002,7 @@ function renderResults(results, { historic = false } = {}) {
       </section>
       ${
         results.guideProfile
-          ? renderGuideProfileCard(results.guideProfile)
+          ? renderGuideProfileCard(results.guideProfile, { sectionPrefix: resultPrefix })
           : renderGuideStatusCard()
       }
     </section>
@@ -904,6 +1040,81 @@ function renderBrandHeader() {
         </nav>
       </div>
     </header>
+  `;
+}
+
+function renderHistorySortButton(label, value) {
+  const variant = state.historySort === value ? "button-accent" : "button-outline";
+  return `<button class="button ${variant}" data-action="history-sort" data-sort="${value}">${escapeHtml(label)}</button>`;
+}
+
+function renderHistoryCompare(entries) {
+  const [left, right] = entries;
+  const leftResults = buildResultsFromAnswers(left.answers);
+  const rightResults = buildResultsFromAnswers(right.answers);
+
+  return `
+    <section class="card card-history-compare">
+      <div class="section-head">
+        <p class="card-kicker">Compare results</p>
+        <h3>${escapeHtml(left.profileName)} vs ${escapeHtml(right.profileName)}</h3>
+        <p>Compare the top gifts, saved dates, and overall profile language side by side before reopening either result in full.</p>
+      </div>
+      <div class="compare-grid">
+        ${renderCompareColumn(left, leftResults)}
+        ${renderCompareColumn(right, rightResults)}
+      </div>
+    </section>
+  `;
+}
+
+function renderCompareColumn(entry, results) {
+  return `
+    <section class="compare-column">
+      <p class="card-kicker">${escapeHtml(formatResultDate(entry.savedAt))}</p>
+      <h3>${escapeHtml(entry.profileName)}</h3>
+      <p class="text-copy">${escapeHtml(entry.profileSummary)}</p>
+      <div class="pill-row">
+        ${renderGiftPill(entry.primaryGift, `${results.primary.meta.label} core`, true)}
+        ${renderGiftPill(entry.secondaryGift, `${results.secondary.meta.label} companion`)}
+      </div>
+      <div class="compare-stats">
+        ${renderCompareStat("Primary", results.primary.meta.label)}
+        ${renderCompareStat("Companion", results.secondary.meta.label)}
+        ${renderCompareStat("Conditional", results.conditional.meta.label)}
+      </div>
+      <div class="button-stack-inline compare-actions">
+        <button class="button button-secondary" data-action="history-detail" data-history-id="${entry.id}">Open Result</button>
+        ${
+          entry.profileSlug
+            ? `<button class="button button-outline" data-action="resource-detail" data-profile="${entry.profileSlug}">Open Design Page</button>`
+            : ""
+        }
+      </div>
+    </section>
+  `;
+}
+
+function renderCompareStat(label, value) {
+  return `
+    <div class="compare-stat">
+      <span>${escapeHtml(label)}</span>
+      <strong>${escapeHtml(value)}</strong>
+    </div>
+  `;
+}
+
+function renderJumpButton(label, targetId) {
+  return `<button class="button button-outline" data-action="jump" data-target="${targetId}">${escapeHtml(label)}</button>`;
+}
+
+function renderResultSummaryCard(label, value, meta, accent) {
+  return `
+    <article class="card result-summary-card" style="--summary-accent:${accent};">
+      <p class="card-kicker">${escapeHtml(label)}</p>
+      <h3>${escapeHtml(value)}</h3>
+      <p class="text-copy">${escapeHtml(meta)}</p>
+    </article>
   `;
 }
 
@@ -1134,7 +1345,7 @@ function renderGuideStatusCard() {
   `;
 }
 
-function renderGuideProfileCard(profile, { standalone = false } = {}) {
+function renderGuideProfileCard(profile, { standalone = false, sectionPrefix = "resource" } = {}) {
   const primary = GIFTS[profile.primaryGift];
   const companion = GIFTS[profile.companionGift];
   const title = standalone ? profile.name : "Full Design Profile";
@@ -1153,7 +1364,7 @@ function renderGuideProfileCard(profile, { standalone = false } = {}) {
         ${renderGiftPill(profile.companionGift, `${companion.label} Companion`)}
       </div>
       <div class="guide-grid">
-        <section class="guide-panel guide-panel-wide">
+        <section class="guide-panel guide-panel-wide" id="${sectionPrefix}-profile">
           <h4>Full Design Profile</h4>
           ${renderCopyParagraphs(fullDesignProfile)}
           ${renderGuideBulletBlock("Scripture foundations", profile.scriptureFoundations)}
@@ -1167,7 +1378,7 @@ function renderGuideProfileCard(profile, { standalone = false } = {}) {
             ${renderGuideBulletBlock("Fight", profile.fightFlow.fight)}
           </div>
         </section>
-        <section class="guide-panel guide-panel-wide">
+        <section class="guide-panel guide-panel-wide" id="${sectionPrefix}-health">
           <h4>Seven Levels of Health</h4>
           <ol class="health-list">
             ${profile.healthLevels
@@ -1276,12 +1487,39 @@ function normalizeSelectedHistoryId(value, resultHistory) {
   return resultHistory.some((entry) => entry.id === value) ? value : null;
 }
 
+function normalizeHistorySort(value) {
+  return ["newest", "oldest", "profile"].includes(value) ? value : "newest";
+}
+
+function normalizeCompareHistoryIds(values, resultHistory) {
+  if (!Array.isArray(values)) {
+    return [];
+  }
+
+  const validIds = new Set(resultHistory.map((entry) => entry.id));
+  return [...new Set(values.map(String).filter((value) => validIds.has(value)))].slice(-2);
+}
+
 function getHistoryEntryById(historyId) {
   return state.resultHistory.find((entry) => entry.id === historyId) || null;
 }
 
 function getLatestHistoryEntry() {
   return state.resultHistory[0] || null;
+}
+
+function getSortedHistoryEntries() {
+  const entries = [...state.resultHistory];
+
+  switch (state.historySort) {
+    case "oldest":
+      return entries.reverse();
+    case "profile":
+      return entries.sort((left, right) => left.profileName.localeCompare(right.profileName));
+    case "newest":
+    default:
+      return entries;
+  }
 }
 
 function getCurrentSavedEntry() {
