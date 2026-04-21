@@ -1574,7 +1574,7 @@ function renderScoreRow(entry, index, results) {
           </div>
         </div>
         <span class="score-pill" style="background:${background};color:${labelColor};--tone:${tone};">
-          <span class="score-pill-icon trait-icon" style="--icon:url('${entry.meta.icon}');"></span>
+          ${renderGiftSvg(entry.gift, "score-pill-icon")}
           ${entry.percentage}%
         </span>
       </div>
@@ -1582,6 +1582,47 @@ function renderScoreRow(entry, index, results) {
         <div class="score-fill" style="width:${entry.percentage}%;background:${tone};"></div>
       </div>
     </div>
+  `;
+}
+
+function renderGiftSvg(gift, className = "") {
+  const paths = {
+    apostle: `
+      <circle cx="12" cy="12" r="9"></circle>
+      <path d="M14.5 9.5l-2 5-5 2 2-5 5-2z"></path>
+      <circle cx="12" cy="12" r="1"></circle>
+    `,
+    prophet: `
+      <path d="M2 12s4-6 10-6 10 6 10 6-4 6-10 6S2 12 2 12z"></path>
+      <circle cx="12" cy="12" r="2"></circle>
+    `,
+    evangelist: `
+      <path d="M12 3l2 3h-4l2-3z"></path>
+      <path d="M10 6h4v3h-4z"></path>
+      <path d="M9 9h6l-1 10H10L9 9z"></path>
+      <path d="M2 9h4M18 9h4"></path>
+      <path d="M3 7l3 2M21 7l-3 2"></path>
+    `,
+    pastor: `
+      <path d="M3 11l9-7 9 7"></path>
+      <path d="M5 10v10h14V10"></path>
+      <path d="M10 20v-6h4v6"></path>
+    `,
+    teacher: `
+      <path d="M12 3c2 2 2 4 0 5-2-1-2-3 0-5z"></path>
+      <path d="M7 14h10a3 3 0 0 1 0 6H7a3 3 0 0 1 0-6z"></path>
+      <path d="M12 8v6"></path>
+    `,
+  };
+
+  if (!paths[gift]) {
+    return "";
+  }
+
+  return `
+    <svg class="${className}" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+      ${paths[gift]}
+    </svg>
   `;
 }
 
