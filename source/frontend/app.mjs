@@ -1366,13 +1366,15 @@ function renderGuideProfileCard(profile, { standalone = false, sectionPrefix = "
       <div class="guide-grid">
         <section class="guide-panel guide-panel-wide" id="${sectionPrefix}-profile">
           <h4>Full Design Profile</h4>
-          ${renderCopyParagraphs(fullDesignProfile)}
+          <p class="guide-hint">Hover, tap, or focus each card to read the full insight.</p>
+          ${renderRevealParagraphs(fullDesignProfile, "Profile insight")}
           ${renderGuideBulletBlock("Scripture foundations", profile.scriptureFoundations)}
           ${renderGuideBulletBlock("Biblical exemplars", profile.biblicalExemplars)}
           ${renderGuideBulletBlock("Conditional, challenge, and counter natures", profile.conditionalChallengeCounter)}
         </section>
         <section class="guide-panel guide-panel-wide">
           <h4>Fight & Flow</h4>
+          <p class="guide-hint">Hover, tap, or focus each item to expand the practical explanation.</p>
           <div class="guide-dual-grid">
             ${renderGuideBulletBlock("Flow", profile.fightFlow.flow)}
             ${renderGuideBulletBlock("Fight", profile.fightFlow.fight)}
@@ -1380,18 +1382,16 @@ function renderGuideProfileCard(profile, { standalone = false, sectionPrefix = "
         </section>
         <section class="guide-panel guide-panel-wide" id="${sectionPrefix}-health">
           <h4>Seven Levels of Health</h4>
-          <ol class="health-list">
+          <p class="guide-hint">Move through the health levels one card at a time for a lighter read.</p>
+          <div class="health-list health-reveal-list">
             ${profile.healthLevels
               .map(
                 (level) => `
-                  <li>
-                    <strong>Level ${level.level}</strong>
-                    <p>${escapeHtml(normalizeCopy(level.text))}</p>
-                  </li>
+                  ${renderRevealCard(`Level ${level.level}`, level.text)}
                 `
               )
               .join("")}
-          </ol>
+          </div>
         </section>
       </div>
     </article>
@@ -1402,16 +1402,33 @@ function renderGuideBulletBlock(label, items) {
   return `
     <div class="text-block">
       <p class="text-label">${escapeHtml(label)}</p>
-      <ul class="guide-list">
-        ${items
-          .map(
-            (item) => `
-              <li>${escapeHtml(normalizeCopy(item))}</li>
-            `
-          )
-          .join("")}
-      </ul>
+      <div class="guide-list reveal-stack">
+        ${items.map((item) => renderRevealCard("", item)).join("")}
+      </div>
     </div>
+  `;
+}
+
+function renderRevealParagraphs(text, label) {
+  return `
+    <div class="reveal-stack">
+      ${paragraphsFromText(text)
+        .map((paragraph, index) => renderRevealCard(`${label} ${index + 1}`, paragraph))
+        .join("")}
+    </div>
+  `;
+}
+
+function renderRevealCard(title, text) {
+  const copy = normalizeCopy(text);
+  const preview = previewCopy(copy);
+
+  return `
+    <article class="reveal-card" tabindex="0">
+      ${title ? `<p class="reveal-card-title">${escapeHtml(title)}</p>` : ""}
+      <p class="reveal-preview">${escapeHtml(preview)}</p>
+      <p class="reveal-detail">${escapeHtml(copy)}</p>
+    </article>
   `;
 }
 
@@ -1753,6 +1770,23 @@ function normalizeCopy(value) {
     .replace(/\s*\n\s*/g, " ")
     .replace(/\s{2,}/g, " ")
     .trim();
+}
+
+function previewCopy(value, wordLimit = 18) {
+  const copy = normalizeCopy(value);
+  const firstSentence = copy.match(/.*?[.!?](\s|$)/)?.[0]?.trim();
+
+  if (firstSentence && firstSentence.length <= 140) {
+    return firstSentence;
+  }
+
+  const words = copy.split(/\s+/).filter(Boolean);
+
+  if (words.length <= wordLimit) {
+    return copy;
+  }
+
+  return `${words.slice(0, wordLimit).join(" ")}...`;
 }
 
 function answersKey(answers) {

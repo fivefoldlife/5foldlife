@@ -1169,28 +1169,100 @@ button {
   letter-spacing: -0.03em;
 }
 
+.guide-hint {
+  margin: 0;
+  color: var(--grey-700);
+  font-size: 0.82rem;
+  line-height: 1.45;
+}
+
 .guide-list,
 .health-list {
   margin: 0;
-  padding-left: 1.1rem;
   display: grid;
   gap: 10px;
 }
 
-.guide-list li,
-.health-list li {
-  color: var(--grey-700);
-  line-height: 1.6;
+.reveal-stack,
+.health-reveal-list {
+  display: grid;
+  gap: 10px;
 }
 
-.health-list li strong {
-  display: block;
-  margin-bottom: 4px;
-  color: var(--black);
+.reveal-card {
+  display: grid;
+  gap: 6px;
+  padding: 14px 16px;
+  border-radius: 18px;
+  border: 1px solid var(--grey-200);
+  background: rgba(255, 255, 255, 0.86);
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.04);
+  cursor: default;
+  transition:
+    transform 0.18s ease,
+    border-color 0.18s ease,
+    box-shadow 0.18s ease,
+    background-color 0.18s ease;
 }
 
-.health-list li p {
+.reveal-card:hover,
+.reveal-card:focus,
+.reveal-card:focus-visible {
+  transform: translateY(-1px);
+  border-color: rgba(53, 94, 138, 0.24);
+  background: var(--white);
+  box-shadow: var(--shadow-light);
+}
+
+.reveal-card:focus {
+  outline: none;
+}
+
+.reveal-card:focus-visible {
+  outline: 3px solid rgba(53, 94, 138, 0.16);
+  outline-offset: 2px;
+}
+
+.reveal-card-title,
+.reveal-preview,
+.reveal-detail {
   margin: 0;
+}
+
+.reveal-card-title {
+  color: var(--black);
+  font-size: 0.8rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.reveal-preview {
+  color: var(--black);
+  font-size: 0.94rem;
+  font-weight: 700;
+  line-height: 1.45;
+}
+
+.reveal-detail {
+  overflow: hidden;
+  max-height: 0;
+  color: var(--grey-700);
+  font-size: 0.94rem;
+  line-height: 1.6;
+  opacity: 0;
+  transition:
+    max-height 0.24s ease,
+    opacity 0.2s ease,
+    padding-top 0.2s ease;
+}
+
+.reveal-card:hover .reveal-detail,
+.reveal-card:focus .reveal-detail,
+.reveal-card:focus-visible .reveal-detail {
+  max-height: 1200px;
+  opacity: 1;
+  padding-top: 4px;
 }
 
 .jump-grid {
