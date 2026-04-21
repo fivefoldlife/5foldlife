@@ -1177,10 +1177,20 @@ button {
 }
 
 .guide-list,
-.health-list {
+.health-list,
+.guide-list-static {
   margin: 0;
   display: grid;
   gap: 10px;
+}
+
+.guide-list-static {
+  padding-left: 1.1rem;
+}
+
+.guide-list-static li {
+  color: var(--grey-700);
+  line-height: 1.6;
 }
 
 .reveal-stack,
@@ -1227,6 +1237,16 @@ button {
 .reveal-preview,
 .reveal-detail {
   margin: 0;
+}
+
+.reveal-detail .text-copy,
+.reveal-detail .text-block {
+  margin-top: 12px;
+}
+
+.reveal-detail .text-copy:first-child,
+.reveal-detail .text-block:first-child {
+  margin-top: 0;
 }
 
 .reveal-card-title {

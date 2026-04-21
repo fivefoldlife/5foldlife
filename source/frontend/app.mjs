@@ -1366,18 +1366,24 @@ function renderGuideProfileCard(profile, { standalone = false, sectionPrefix = "
       <div class="guide-grid">
         <section class="guide-panel guide-panel-wide" id="${sectionPrefix}-profile">
           <h4>Full Design Profile</h4>
-          <p class="guide-hint">Hover, tap, or focus each card to read the full insight.</p>
-          ${renderRevealParagraphs(fullDesignProfile, "Profile insight")}
-          ${renderGuideBulletBlock("Scripture foundations", profile.scriptureFoundations)}
-          ${renderGuideBulletBlock("Biblical exemplars", profile.biblicalExemplars)}
-          ${renderGuideBulletBlock("Conditional, challenge, and counter natures", profile.conditionalChallengeCounter)}
+          <p class="guide-hint">Hover, tap, or focus the card to read the full profile.</p>
+          ${renderRevealHtmlCard(
+            "Full Design Profile",
+            previewCopy(fullDesignProfile, 24),
+            `
+              ${renderCopyParagraphs(fullDesignProfile)}
+              ${renderStaticBulletBlock("Scripture foundations", profile.scriptureFoundations)}
+              ${renderStaticBulletBlock("Biblical exemplars", profile.biblicalExemplars)}
+              ${renderStaticBulletBlock("Conditional, challenge, and counter natures", profile.conditionalChallengeCounter)}
+            `
+          )}
         </section>
         <section class="guide-panel guide-panel-wide">
           <h4>Fight & Flow</h4>
-          <p class="guide-hint">Hover, tap, or focus each item to expand the practical explanation.</p>
+          <p class="guide-hint">Hover, tap, or focus Flow or Fight to expand each section.</p>
           <div class="guide-dual-grid">
-            ${renderGuideBulletBlock("Flow", profile.fightFlow.flow)}
-            ${renderGuideBulletBlock("Fight", profile.fightFlow.fight)}
+            ${renderRevealListCard("Flow", profile.fightFlow.flow)}
+            ${renderRevealListCard("Fight", profile.fightFlow.fight)}
           </div>
         </section>
         <section class="guide-panel guide-panel-wide" id="${sectionPrefix}-health">
@@ -1398,37 +1404,49 @@ function renderGuideProfileCard(profile, { standalone = false, sectionPrefix = "
   `;
 }
 
-function renderGuideBulletBlock(label, items) {
-  return `
-    <div class="text-block">
-      <p class="text-label">${escapeHtml(label)}</p>
-      <div class="guide-list reveal-stack">
-        ${items.map((item) => renderRevealCard("", item)).join("")}
-      </div>
-    </div>
-  `;
-}
-
-function renderRevealParagraphs(text, label) {
-  return `
-    <div class="reveal-stack">
-      ${paragraphsFromText(text)
-        .map((paragraph, index) => renderRevealCard(`${label} ${index + 1}`, paragraph))
-        .join("")}
-    </div>
-  `;
+function renderRevealListCard(title, items) {
+  return renderRevealHtmlCard(
+    title,
+    previewCopy(items[0] || ""),
+    renderStaticList(items)
+  );
 }
 
 function renderRevealCard(title, text) {
   const copy = normalizeCopy(text);
-  const preview = previewCopy(copy);
+  return renderRevealHtmlCard(title, previewCopy(copy), `<p>${escapeHtml(copy)}</p>`);
+}
 
+function renderRevealHtmlCard(title, preview, detailHtml) {
   return `
     <article class="reveal-card" tabindex="0">
       ${title ? `<p class="reveal-card-title">${escapeHtml(title)}</p>` : ""}
       <p class="reveal-preview">${escapeHtml(preview)}</p>
-      <p class="reveal-detail">${escapeHtml(copy)}</p>
+      <div class="reveal-detail">${detailHtml}</div>
     </article>
+  `;
+}
+
+function renderStaticBulletBlock(label, items) {
+  return `
+    <div class="text-block">
+      <p class="text-label">${escapeHtml(label)}</p>
+      ${renderStaticList(items)}
+    </div>
+  `;
+}
+
+function renderStaticList(items) {
+  return `
+    <ul class="guide-list-static">
+      ${items
+        .map(
+          (item) => `
+            <li>${escapeHtml(normalizeCopy(item))}</li>
+          `
+        )
+        .join("")}
+    </ul>
   `;
 }
 
