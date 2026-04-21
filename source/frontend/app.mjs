@@ -1543,13 +1543,26 @@ function renderFiveC(results) {
   return map
     .map(
       ({ label, entry }) => `
-        <div class="five-c-chip">
+        <button class="five-c-chip" type="button" aria-label="${escapeHtml(`${label}: ${entry.meta.label}. ${buildFiveCBlurb(label, entry)}`)}">
           <span>${label}</span>
           <strong style="color:${entry.meta.accent}">${entry.meta.label}</strong>
-        </div>
+          <small>${escapeHtml(buildFiveCBlurb(label, entry))}</small>
+        </button>
       `
     )
     .join("");
+}
+
+function buildFiveCBlurb(label, entry) {
+  const roleBlurbs = {
+    Core: "Your strongest natural lane. This is the gift that tends to lead first.",
+    Companion: "The support gift that adds flavor, energy, and balance to your core.",
+    Conditional: "A situational strength that rises when the context calls for it.",
+    Challenge: "A growth edge that may require more intention, practice, and maturity.",
+    Counter: "The least natural lane, but still part of your design when used with wisdom.",
+  };
+
+  return `${roleBlurbs[label] || "A meaningful part of your fivefold order."} ${entry.meta.label} brings ${entry.meta.bridgeRole}.`;
 }
 
 function renderScoreRow(entry, index, results) {

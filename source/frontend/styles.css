@@ -1037,12 +1037,29 @@ button {
 
 .five-c-chip {
   display: inline-grid;
-  gap: 2px;
+  gap: 4px;
   padding: 14px 16px;
   min-width: 132px;
+  max-width: 240px;
   border-radius: 20px;
   background: var(--grey-50);
   border: 1px solid var(--grey-200);
+  color: var(--black);
+  text-align: left;
+  cursor: pointer;
+  transition:
+    transform 0.18s ease,
+    border-color 0.18s ease,
+    box-shadow 0.18s ease,
+    background-color 0.18s ease;
+}
+
+.five-c-chip:hover,
+.five-c-chip:focus-visible {
+  transform: translateY(-1px);
+  border-color: rgba(53, 94, 138, 0.22);
+  background: var(--white);
+  box-shadow: var(--shadow-light);
 }
 
 .five-c-chip span {
@@ -1053,6 +1070,30 @@ button {
 
 .five-c-chip strong {
   font-size: 1rem;
+}
+
+.five-c-chip small {
+  display: block;
+  overflow: hidden;
+  max-height: 0;
+  max-width: 28ch;
+  color: var(--grey-700);
+  font-size: 0.76rem;
+  font-weight: 600;
+  line-height: 1.45;
+  opacity: 0;
+  transition:
+    max-height 0.2s ease,
+    opacity 0.2s ease,
+    padding-top 0.2s ease;
+}
+
+.five-c-chip:hover small,
+.five-c-chip:focus-visible small,
+.five-c-chip:focus-within small {
+  max-height: 96px;
+  opacity: 1;
+  padding-top: 4px;
 }
 
 .results-grid {
